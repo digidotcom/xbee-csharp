@@ -1,0 +1,58 @@
+  Introduction
+  ------------
+  This sample C# application shows how to send UDP data from an IP device to 
+  another one connected to the Internet using the XBee C# Library.
+
+  The application sends UDP data to the specified IP address and port number.
+
+  NOTE: This example uses the Cellular device (CellularDevice) class as it is 
+        the only device able to send and receive IP data.
+
+
+  Files
+  -----
+    * MainApp.cs:
+      Main application class. It instantiates a Cellular device, establishes a 
+      serial connection with it and sends the UDP data to the specified IP 
+      address and port. Finally it prints out the result of the sent operation.
+
+
+  Requirements
+  ------------
+  To run this example you will need:
+
+    * One XBee Cellular radio in API mode and its corresponding carrier board 
+      (XBIB or equivalent).
+    * The XCTU application (available at www.digi.com/xctu).
+
+
+  Compatible protocols
+  --------------------
+    * Cellular
+
+
+  Example setup
+  -------------
+    1) Plug the XBee radio into the XBee adapter and connect it to your
+       computer's USB or serial ports.
+
+    2) Ensure that the module is in API mode and connected to the Internet.
+       For further information on how to perform this task, read the 
+       'Configuring Your XBee Modules' topic of the Getting Started guide.
+
+    3) Set the port and baud rate of the XBee radio in the MainApp class.
+       If you configured the module in the previous step with XCTU, you will
+       see the port number and baud rate in the 'Port' label of the device 
+       on the left view.
+
+    4) Set the destination IP address and port number in the MainApp class.
+
+
+  Running the example
+  -------------------
+  First, build and launch the application. As soon as the application is 
+  executed, it will send the UDP packet to the specified IP address and port
+  number. If the transmission was sent succesfully, the following message will
+  be printed out in the console:
+  
+    Sending data to 192.168.1.2:9750 >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!... Success
