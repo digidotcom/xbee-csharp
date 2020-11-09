@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<AgricultureDemo:CustomContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:AgricultureDemo="clr-namespace:AgricultureDemo;assembly=AgricultureDemo"
+             x:Class="AgricultureDemo.MainPage"
+             Title="XBee Agriculture"
+             Padding="10,15,5,10">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="DRM credentials" Order="Secondary" Command="{Binding DrmCredentialsCommand}" />
+        <ToolbarItem Text="Documentation" Order="Secondary" Command="{Binding OpenURLCommand}" CommandParameter="{Binding URLDocumentation}" />
+    </ContentPage.ToolbarItems>
+    <ContentPage.Content>
+        <StackLayout Spacing="10">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                <Label Text="Scanning for nearby devices..." HorizontalOptions="StartAndExpand" VerticalOptions="Center" StyleClass="medium-label"/>
+                <ActivityIndicator IsVisible="{Binding IsScanning}" IsRunning="{Binding IsScanning}" VerticalOptions="End" HeightRequest="25"/>
+            </StackLayout>
+            <ListView ItemsSource="{Binding Devices}" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"
+                      HasUnevenRows="true" ItemSelected="OnItemSelected" SeparatorVisibility="None">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid Padding="5" RowSpacing="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.Triggers>
+                                    <DataTrigger TargetType="Grid" Binding="{Binding IsActive}" Value="False">
+                                        <Setter Property="Opacity" Value="0.2"/>
+                                    </DataTrigger>
+                                </Grid.Triggers>
+                                <StackLayout Grid.Column="0" Grid.Row="0" Padding="7,10,7,10" Spacing="0">
+                                    <Label Text="{Binding Name}" Font="Bold,18" />
+                                    <StackLayout Orientation="Horizontal" Spacing="0">
+                                        <Label Text="MAC: "/>
+                                        <Label Text="{Binding BleMac}"/>
+                                    </StackLayout>
+                                </StackLayout>
+                                <StackLayout Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Orientation="Vertical" VerticalOptions="CenterAndExpand" Margin="0,0,10,0">
+                                    <Image Source="{Binding RssiImage}" HeightRequest="25" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"/>
+                                    <Label Text="{Binding Rssi, StringFormat='{0:F0} dB'}" FontSize="12" HorizontalOptions="Center" VerticalOptions="CenterAndExpand"/>
+                                </StackLayout>
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+    </ContentPage.Content>
+</AgricultureDemo:CustomContentPage>

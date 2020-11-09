@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<AgricultureDemo:CustomContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:AgricultureDemo="clr-namespace:AgricultureDemo;assembly=AgricultureDemo"
+             xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps"
+             x:Class="AgricultureDemo.ProvisionPage"
+             Title="XBee Agriculture"
+             EnableBackButtonOverride="True"
+             Padding="0">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <AgricultureDemo:LocationConverter x:Key="LocationConverter"/>
+            <AgricultureDemo:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="DRM credentials" Order="Secondary" Command="{Binding DrmCredentialsCommand}" />
+        <ToolbarItem Text="Documentation" Order="Secondary" Command="{Binding OpenURLCommand}" CommandParameter="{Binding URLDocumentation}" />
+    </ContentPage.ToolbarItems>
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="Enter the data to provision this irrigation device:" Margin="20,20,0,10" FontSize="16" />
+            <ScrollView VerticalOptions="StartAndExpand">
+                <ScrollView.InputTransparent>
+                    <OnPlatform x:TypeArguments="x:Boolean">
+                        <On Platform="iOS" Value="False" />
+                        <On Platform="Android" Value="True" />
+                    </OnPlatform>
+                </ScrollView.InputTransparent>
+                <Grid RowSpacing="5" Padding="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackLayout Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Vertical" IsVisible="{Binding IsController}">
+                        <!-- Farm name -->
+                        <Label Text="Farm Identifier" FontSize="18" FontAttributes="Bold" />
+                        <Label Text="The identifier of this farm. It must be the same for all irrigation controllers of the farm." />
+                        <Entry Text="{Binding FarmId}" IsSpellCheckEnabled="False" />
+                        <!-- Controller identifier -->
+                        <Label Text="Controller Identifier" FontSize="18" FontAttributes="Bold" Margin="0,20,0,0" />
+                        <Label Text="The unique identifier of this irrigation controller." />
+                        <Entry Text="{Binding DeviceId}" IsSpellCheckEnabled="False" />
+                        <!-- Install code -->
+                        <Label Text="Install Code" FontSize="18" FontAttributes="Bold" Margin="0,20,0,0" />
+                        <Label Text="The installation code found on the XBee Gateway label." />
+                        <Entry Text="{Binding InstallCode}" IsSpellCheckEnabled="False" />
+                        <!-- Is main controller -->
+                        <StackLayout Orientation="Horizontal" Margin="0,20,0,0">
+                            <Label Text="Main Controller" FontSize="18" FontAttributes="Bold" HorizontalOptions="FillAndExpand" />
+                            <Switch IsToggled="{Binding IsMainController}" />
+                        </StackLayout>
+                        <Label Text="Specify whether this is the main controller or not. Each installation can only have one main controller." />
+                    </StackLayout>
+                    <StackLayout Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Vertical" IsVisible="{Binding IsController, Converter={StaticResource InverseBoolConverter}}">
+                        <!-- Station identifier -->
+                        <Label Text="Station Identifier" FontSize="18" FontAttributes="Bold" />
+                        <Label Text="The unique identifier of this irrigation station." />
+                        <Entry Text="{Binding DeviceId}" IsSpellCheckEnabled="False" />
+                    </StackLayout>
+                    <!-- Network identifier -->
+                    <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="Network Identifier" FontSize="18" FontAttributes="Bold" Margin="0,30,0,0" />
+                    <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Text="The identifier of the network this irrigation device will create. You can auto generate it."
+                           IsVisible="{Binding IsController}" />
+                    <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Text="The identifier of the network this irrigation device will join to. You can use one of the previous generated."
+                           IsVisible="{Binding IsController, Converter={StaticResource InverseBoolConverter}}" />
+                    <Entry Grid.Row="3" Grid.Column="0" Text="{Binding NetworkId}" IsSpellCheckEnabled="False" VerticalOptions="Center" />
+                    <ImageButton Grid.Row="3" Grid.Column="1" Source="flash.png" Clicked="GenerateNetworkIdClicked" Padding="10"
+                                 IsVisible="{Binding IsController}" />
+                    <ImageButton Grid.Row="3" Grid.Column="1" Source="search.png" Clicked="SearchNetworkIdClicked" Padding="10"
+                                 IsVisible="{Binding IsController, Converter={StaticResource InverseBoolConverter}}" />
+                    <!-- Network password -->
+                    <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Text="Network Password" FontSize="18" FontAttributes="Bold" Margin="0,30,0,0" />
+                    <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Text="The password used to encrypt the communication on the network." />
+                    <Entry Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding NetworkPassword}" IsSpellCheckEnabled="False" />
+                    <!-- GPS location -->
+                    <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Text="GPS location" FontSize="18" FontAttributes="Bold" Margin="0,30,0,0" />
+                    <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Text="The GPS coordinates of this irrigation device. The location is taken from the phone or tablet." />
+                    <Entry Grid.Row="9" Grid.Column="0" Text="{Binding Location, Converter={StaticResource LocationConverter}}" IsEnabled="False" IsSpellCheckEnabled="False"
+                           VerticalOptions="Center"/>
+                    <ImageButton Grid.Row="9" Grid.Column="1" Source="refresh.png" Clicked="RefreshLocationClicked" Padding="10" />
+                    <!-- Map -->
+                    <StackLayout Orientation="Vertical" Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2">
+                        <Grid>
+                            <maps:Map x:Name="map" HorizontalOptions="FillAndExpand" HeightRequest="250" MapClicked="MapClicked" />
+                            <ImageButton Source="map_view.png" HorizontalOptions="Start" VerticalOptions="Start" Margin="10,10,0,0" Clicked="ToggleMapViewClicked"  />
+                        </Grid>
+                        <Label Text="* Tap on the map to set the new position" FontSize="Micro" />
+                    </StackLayout>
+                </Grid>
+            </ScrollView>
+            <Button Text="Provision device" ImageSource="start.png" HorizontalOptions="Center" ContentLayout="Left, 30" Padding="30,15,30,15" Margin="0,0,0,10"
+                    Clicked="ProvisionDeviceClicked" IsEnabled="{Binding IsValid}" />
+        </StackLayout>
+    </ContentPage.Content>
+</AgricultureDemo:CustomContentPage>
