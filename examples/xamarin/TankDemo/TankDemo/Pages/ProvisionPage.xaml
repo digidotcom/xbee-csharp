@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TankDemo:CustomContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:TankDemo="clr-namespace:TankDemo;assembly=TankDemo"
+             xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps"
+             x:Class="TankDemo.ProvisionPage"
+             Title="XBee Tank"
+             EnableBackButtonOverride="True"
+             Padding="0">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <TankDemo:LocationConverter x:Key="LocationConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="DRM credentials" Order="Secondary" Command="{Binding DrmCredentialsCommand}" />
+        <ToolbarItem Text="Documentation" Order="Secondary" Command="{Binding OpenURLCommand}" CommandParameter="{Binding URLDocumentation}" />
+    </ContentPage.ToolbarItems>
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="Enter the data to provision this tank:" Margin="20,20,0,10" FontSize="16" />
+            <ScrollView VerticalOptions="StartAndExpand">
+                <ScrollView.InputTransparent>
+                    <OnPlatform x:TypeArguments="x:Boolean">
+                        <On Platform="iOS" Value="False" />
+                        <On Platform="Android" Value="True" />
+                    </OnPlatform>
+                </ScrollView.InputTransparent>
+                <Grid RowSpacing="10" Padding="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <!-- Farm name -->
+                    <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Installation Identifier" FontSize="18" FontAttributes="Bold" />
+                    <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="The identifier of this installation. It must be the same for all tanks of the installation." />
+                    <Entry Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding InstallationId}" IsSpellCheckEnabled="False" />
+                    <!-- Tank identifier -->
+                    <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="Tank Identifier" FontSize="18" FontAttributes="Bold" />
+                    <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Text="The unique identifier of this tank." />
+                    <Entry Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding DeviceId}" IsSpellCheckEnabled="False" />
+                    <!-- Install code -->
+                    <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Text="Install Code" FontSize="18" FontAttributes="Bold" />
+                    <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Text="The installation code found on the XBee Cellular label." />
+                    <Entry Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding InstallCode}" IsSpellCheckEnabled="False" />
+                    <!-- GPS location -->
+                    <Label Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Text="GPS location" FontSize="18" FontAttributes="Bold" />
+                    <Label Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Text="The GPS coordinates of this tank. The location is taken from the phone or tablet." />
+                    <Entry Grid.Row="11" Grid.Column="0" Text="{Binding Location, Converter={StaticResource LocationConverter}}" IsEnabled="False" IsSpellCheckEnabled="False"
+                           VerticalOptions="Center"/>
+                    <ImageButton Grid.Row="11" Grid.Column="1" Source="refresh.png" Clicked="RefreshLocationClicked" Padding="10" />
+                    <!-- Map -->
+                    <StackLayout Orientation="Vertical" Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="2">
+                        <Grid>
+                            <maps:Map x:Name="map" HorizontalOptions="FillAndExpand" HeightRequest="250" MapClicked="MapClicked" />
+                            <ImageButton Source="map_view.png" HorizontalOptions="Start" VerticalOptions="Start" Margin="10,10,0,0" Clicked="ToggleMapViewClicked"  />
+                        </Grid>
+                        <Label Text="* Tap on the map to set the new position" FontSize="Micro" />
+                    </StackLayout>
+                </Grid>
+            </ScrollView>
+            <Button Text="Provision device" ImageSource="start.png" HorizontalOptions="Center" ContentLayout="Left, 30" Padding="30,15,30,15" Margin="0,0,0,10"
+                    Clicked="ProvisionDeviceClicked" IsEnabled="{Binding IsValid}" />
+        </StackLayout>
+    </ContentPage.Content>
+</TankDemo:CustomContentPage>
