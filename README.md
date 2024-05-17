@@ -11,13 +11,23 @@ the common code for any platform, and **XBeeLibrary.Xamarin**, which contains
 the necessary APIs to develop multi-platform mobile applications with Xamarin
 to communicate with XBee devices over Bluetooth Low Energy.
 
+> [!WARNING]
+> Official support for Xamarin ended on May 1, 2024. So, XBee Library for
+> Xamarin has been deprecated in favor of **Digi IoT Library for .NET MAUI**.
+> To develop multi-platform mobile applications that communicate with Digi XBee
+> devices over Bluetooth Low Energy, use our new
+> [Digi IoT Library for .NET MAUI](https://github.com/digidotcom/digi-iot-maui).
+> 
+> For more information about developing Bluetooth Low Energy Mobile apps for
+> Digi XBee devices, see the [Digi IoT Mobile SDK User Guide](https://www.digi.com/resources/documentation/digidocs/90002568)
+
 The project includes the C# source code and multiple examples that show how to
 use the available APIs. The examples are also available in source code format.
 
 The main features of the library include:
 
-* Support for ZigBee, 802.15.4, DigiMesh, Point-to-Multipoint and Cellular
-XBee devices.
+* Support for ZigBee, 802.15.4, DigiMesh, Point-to-Multipoint, Cellular and
+BLU XBee devices.
 * Support for API and API escaped operating modes.
 * Support for communicating with XBee devices over Bluetooth Low Energy
 (XBeeLibrary.Xamarin).
@@ -64,7 +74,7 @@ document.
 
 ## License
 
-Copyright 2019-2022, Digi International Inc.
+Copyright 2019-2024, Digi International Inc.
 Copyright 2014-2015, Sébastien RAULT. 
 
 This Source Code Form is subject to the terms of the Mozilla Public
