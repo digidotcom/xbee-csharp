@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using XBeeLibrary.Core.Events;
 using XBeeLibrary.Core.Exceptions;
 using XBeeLibrary.Core.Packet;
@@ -59,6 +60,7 @@ namespace XBeeLibrary.Core.Models
 		private static readonly string ERROR_VERIFY_INSTALL_ERROR_PROCESS = "Image transferred to device is not valid.";
 		private static readonly string ERROR_PLATFORM_INFO_ERROR_PROCESS = "An error occurred getting the platform information.";
 		private static readonly string ERROR_NO_MODEM_RESET = "No modem reset frame detected after {0} seconds.";
+		private static readonly string ERROR_PREFIX_TIMEOUT = "timeout";
 
 		public static readonly string TASK_GET_PLATFORM_INFO = "Getting platform info";
 		public static readonly string TASK_ERASE = "Erasing flash";
@@ -157,10 +159,33 @@ namespace XBeeLibrary.Core.Models
 			TransferFirmware(pageSize);
 
 			// Step 5: Verify and install the transferred firmware image.
-			VerifyFlashImage();
-			VerifyAndInstallFlashImage();
+			try
+			{
+				VerifyAndInstallFlashImage();
+			}
+			catch (GpmException e)
+			{
+				// The image could be correct on the target device. So, verify it
+				// and retry the install.
+				if (!e.Message.Contains(ERROR_RX_TIMEOUT))
+				{
+					VerifyFlashImage();
+					VerifyAndInstallFlashImage();
+				}
+				else
+				{
+					// A timeout exception means that the device rebooted to install the firmware,
+					// which is expected.
+					// TODO: This should just return, or return a boolean (true). The code calling
+					//       this method should not be checking the type of exception thrown to
+					//       determine if the update was success or not.
+					throw e;
+				}
+			}
 
-			// Step 6: Wait for the device to reboot after the firmware update.
+			// Step 6: Wait for the device to reboot after the firmware update. In Bluetooth this
+			//         step is never reached as the BLE connection is lost when the device is reset
+			//         to install the firmware.
 			WaitForDeviceToUpgrade();
 
 			logger.Info("Device firmware updated successfully");
@@ -440,6 +465,18 @@ namespace XBeeLibrary.Core.Models
 				(byte)BROADCAST_RADIUS_MAXIMUM, (byte)TRANSMIT_OPTIONS_NONE, verifyAndInstallPayload);
 			// Send the packet.
 			string errorString = SendGPMAPIPacket(verifyInstallPacket, timeout);
+			// When the connection with the device is via Bluetooth, the device could reset before
+			// receiving the ACK for the write characteristic. This causes a timeout when writing to
+			// the TX characteristic. The firmware is being applied, but we need to wait some time
+			// for it to start and make the firmware update process think there was a timeout waiting
+			// for the GPM response, which would be the expected behavior.
+			if (errorString != null
+				&& errorString.ToLower().StartsWith(ERROR_PREFIX_TIMEOUT)
+				&& !errorString.Equals(ERROR_RX_TIMEOUT))
+			{
+				Task.Delay(timeout).Wait();
+				errorString = ERROR_RX_TIMEOUT;
+			}
 			if (errorString != null)
 				errorString = ERROR_SEND_PACKET_EXTENDED + errorString;
 			else if (gpmAnswerPayload.Length < 8)
